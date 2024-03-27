@@ -1,5 +1,9 @@
 package academy
 
+import (
+	"math"
+)
+
 type Student struct {
 	Name       string
 	Grades     []int
@@ -11,7 +15,16 @@ type Student struct {
 // slice containing all grades received during a
 // semester, rounded to the nearest integer.
 func AverageGrade(grades []int) int {
-	panic("not implemented")
+	sum := 0
+	for i := 0; i < len(grades); i++ {
+		sum = sum + grades[i]
+	}
+	if len(grades) > 0 {
+		return int(math.Round(float64(sum) / float64(len(grades))))
+	} else {
+		return 0
+	}
+
 }
 
 // AttendancePercentage returns a percentage of class
@@ -21,7 +34,17 @@ func AverageGrade(grades []int) int {
 // The percentage of attendance is represented as a
 // floating-point number ranging from 0 to 1.
 func AttendancePercentage(attendance []bool) float64 {
-	panic("not implemented")
+	temp := float64(0)
+	for i := 0; i < len(attendance); i++ {
+		if attendance[i] {
+			temp = temp + 1
+		}
+	}
+	if len(attendance) > 0 {
+		return temp / float64(len(attendance))
+	} else {
+		return 0
+	}
 }
 
 // FinalGrade returns a final grade achieved by a student,
@@ -36,12 +59,31 @@ func AttendancePercentage(attendance []bool) float64 {
 // decreased by 1. If the student's attendance is below 60%, average
 // grade is 1 or project grade is 1, the final grade is 1.
 func FinalGrade(s Student) int {
-	panic("not implemented")
+	tempFinalGrade := int(math.Round((float64(AverageGrade(s.Grades)) + float64(s.Project)) / 2))
+
+	switch {
+	case AttendancePercentage(s.Attendance) < 0.6 || AverageGrade(s.Grades) == 1 || s.Project == 1:
+		return 1
+	case AttendancePercentage(s.Attendance) >= 0.8:
+		return tempFinalGrade
+	case AttendancePercentage(s.Attendance) >= 0.6:
+		if tempFinalGrade > 1 {
+			return tempFinalGrade - 1
+		} else {
+			return 1
+		}
+	default:
+		return 1
+	}
 }
 
 // GradeStudents returns a map of final grades for a given slice of
 // Student structs. The key is a student's name and the value is a
 // final grade.
 func GradeStudents(students []Student) map[string]uint8 {
-	panic("not implemented")
+	temp := map[string]uint8{}
+	for i := 0; i < len(students); i++ {
+		temp[students[i].Name] = uint8(FinalGrade(students[i]))
+	}
+	return temp
 }
